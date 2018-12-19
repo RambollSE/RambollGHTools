@@ -6,16 +6,16 @@ using Rhino.Geometry;
 
 namespace RailwayPlanner
 {
-    public class CheckRailCurveRadius : GH_Component
+    public class CheckRailCurveInclination : GH_Component
     {
-        
+
 
         /// <summary>
         /// Initializes a new instance of the CheckRailCurveRadius class.
         /// </summary>
-        public CheckRailCurveRadius()
-          : base("CheckRailCurveRadius", "RadiusCheck",
-              "Checks Rail Curve for minimal radius",
+        public CheckRailCurveInclination()
+          : base("CheckRailCurveInclination", "InclinationCheck",
+              "Checks Rail Curve for maximal inclination",
               "Ramboll Tools", "Railway Planner")
         {
         }
@@ -26,6 +26,7 @@ namespace RailwayPlanner
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddCurveParameter("Curve", "C", "Curve To Check", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Curve Scale", "Scale", "Height Scale of Curve, normal 10", GH_ParamAccess.item, 10);
         }
 
         /// <summary>
@@ -43,28 +44,31 @@ namespace RailwayPlanner
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             Curve crv = null;
+            double sFac = 10;
             if (!DA.GetData(0, ref crv)) return;
+            if (!DA.GetData(1, ref sFac)) return;
+
+            double maxInclination = sFac * _maxInclination;
 
             List<Point3d> locations = new List<Point3d>();
-            List<double> radii = new List<double>();
+            List<double> inclinations = new List<double>();
 
 
-            if(crv.IsPolyline())
+            if (crv.IsPolyline())
             {
-                Polyline pLine = null; 
-                if(crv.TryGetPolyline(out pLine))
+                Polyline pLine = null;
+                if (crv.TryGetPolyline(out pLine))
                 {
-                    for (int i = 0; i < pLine.Count-2; i++)
+                    for (int i = 0; i < pLine.Count - 1; i++)
                     {
                         Point3d p1 = pLine[i];
                         Point3d p2 = pLine[i + 1];
-                        Point3d p3 = pLine[i + 2];
-                        Circle circle = new Circle(p1, p2, p3);
-                        double radius = circle.Radius;
-                        if(radius<maxRadius)
+                        Vector3d vec1 = new Vector3d(p2 - p1);
+                        double inclination = Math.Abs(vec1.Z / vec1.Y)/ sFac;
+                        if (inclination > maxInclination)
                         {
-                            radii.Add(radius);
-                            locations.Add(p2);
+                            inclinations.Add(inclination);
+                            locations.Add(0.5*(p1+p2));
                         }
                     }
                 }
@@ -75,14 +79,13 @@ namespace RailwayPlanner
                 double[] parameters = crv.DivideByCount(divisions, true);
                 foreach (double param in parameters)
                 {
-                    Vector3d curvatureVector =  crv.CurvatureAt(param);
-                    double vectorLength = curvatureVector.Length;
+                    Vector3d tangentVector = crv.TangentAt(param);
                     try
                     {
-                        double radius = 1 / vectorLength;
-                        if (radius < maxRadius)
+                        double inclination = Math.Abs(tangentVector.Z / tangentVector.Y)/sFac;
+                        if (inclination > _maxInclination)
                         {
-                            radii.Add(radius);
+                            inclinations.Add(inclination);
                             locations.Add(crv.PointAt(param));
                         }
                     }
@@ -90,17 +93,16 @@ namespace RailwayPlanner
                     {
 
                     }
-                }          
+                }
             }
             DA.SetData(0, crv);
             _positions = locations;
-            _radii = radii;
+            _inclinations = inclinations;
         }
-
-        private double maxRadius = 5000;
-        private int divisions = 100;
+        private double _maxInclination = 0.025;
+        private int divisions = 50;
         private List<Point3d> _positions = new List<Point3d>();
-        private List<double> _radii = new List<double>();
+        private List<double> _inclinations = new List<double>();
 
         public override void DrawViewportMeshes(IGH_PreviewArgs args)
         {
@@ -113,7 +115,7 @@ namespace RailwayPlanner
             // Display Radius
             for (int i = 0; i < _positions.Count; i++)
             {
-                string dispText = "Radius to small r = " + ((int)_radii[i]).ToString();
+                string dispText = "Inclination to big r = " + ((int)(_inclinations[i]*1000)).ToString() + " ‰";
                 args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14);
                 args.Display.DrawPoint(_positions[i], color1);
             }
@@ -137,7 +139,7 @@ namespace RailwayPlanner
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("4c77e8a0-7eeb-4b90-8a58-bbace5c0c1be"); }
+            get { return new Guid("873b4311-921b-4b87-94e2-adc3120e438b"); }
         }
     }
 }

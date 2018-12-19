@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BakeCurve.cs" />
+    <Compile Include="CheckRailCurveInclination.cs" />
     <Compile Include="CheckRailCurveRadius.cs" />
     <Compile Include="HeightIdentifier.cs" />
     <Compile Include="RailwayPlannerInfo.cs" />
