@@ -116,8 +116,12 @@ namespace RailwayPlanner
             for (int i = 0; i < _positions.Count; i++)
             {
                 string dispText = "Inclination to big r = " + ((int)(_inclinations[i]*1000)).ToString() + " ‰";
-                args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14);
-                args.Display.DrawPoint(_positions[i], color1);
+                Rhino.RhinoApp.WriteLine(args.Display.Viewport.Name);
+                if (args.Display.Viewport.Name == "Right")
+                {
+                    args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14);
+                    args.Display.DrawPoint(_positions[i], color1);
+                }                    
             }
         }
 

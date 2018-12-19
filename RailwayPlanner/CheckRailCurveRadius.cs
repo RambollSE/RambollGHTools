@@ -59,7 +59,7 @@ namespace RailwayPlanner
                         Point3d p1 = pLine[i];
                         Point3d p2 = pLine[i + 1];
                         Point3d p3 = pLine[i + 2];
-                        Circle circle = new Circle(p1, p2, p3);
+                        Circle circle = new Circle(new Point3d(p1.X, p1.Y, 0), new Point3d(p2.X, p2.Y, 0), new Point3d(p3.X, p3.Y, 0));
                         double radius = circle.Radius;
                         if(radius<maxRadius)
                         {
@@ -114,8 +114,12 @@ namespace RailwayPlanner
             for (int i = 0; i < _positions.Count; i++)
             {
                 string dispText = "Radius to small r = " + ((int)_radii[i]).ToString();
-                args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14);
-                args.Display.DrawPoint(_positions[i], color1);
+                Rhino.RhinoApp.WriteLine(args.Display.Viewport.Name);
+                if (args.Display.Viewport.Name == "Top")
+                { 
+                    args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14);
+                    args.Display.DrawPoint(_positions[i], color1);
+                }
             }
         }
 
