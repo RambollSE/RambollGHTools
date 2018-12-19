@@ -110,45 +110,13 @@ namespace RailwayPlanner
             Color colorFrameColumn = Color.SteelBlue;
             Color colorRed = Color.Firebrick;
 
-
-
-            // Display Building
-            Point3d GC = _gravCenterBuilding;
-            args.Display.Draw2dText(_textBuilding1, colorGrey, Point3d.Add(GC, new Point3d(2, 0, 0)), false, 20 * _textFac);
-            args.Display.Draw2dText(_textBuilding2, colorGrey, Point3d.Add(GC, new Point3d(2, -2, 0)), false, 14 * _textFac);
-            args.Display.DrawPoint(GC, colorGrey);
-            args.Display.DrawCircle(new Circle(GC, 2 * _sFac), colorGrey);
-            args.Display.DrawBrepWires(_brepBuilding, colorGrey);
             // Display Cores
-            for (int i = 0; i < _gravCentCores.Count; i++)
+            for (int i = 0; i < _positions.Count; i++)
             {
-                GC = _gravCentCores[i];
-                //args.Display.Draw2dText(_textCores1[i], colorCore, Point3d.Add(GC, new Point3d(2, 0, 0)), false, 14 * _textFac);
-                args.Display.Draw2dText(_textCores2[i], color1, Point3d.Add(GC, new Point3d(2, -2, 0)), false, 14 * _textFac);
-                args.Display.DrawPoint(GC, color1);
-                args.Display.DrawCircle(new Circle(GC, _sFac), color1);
-                args.Display.DrawBrepShaded(_brepCores[i], materialCore);
-                args.Display.DrawBrepWires(_brepCores[i], color1, -1);
+                string dispText = "Radius to small r = " + ((int)_radii[i]).ToString();
+                args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14 * 10);
+                args.Display.DrawPoint(_positions[i], color1);
             }
-            for (int i = 0; i < _evalPts.Count; i++)
-            {
-                Line line = new Line(_evalPts[i], _evalPts[i] + _sFac * _Sz[i] * Vector3d.ZAxis);
-                //args.Display.DrawLine(line, colorStaticMoment);
-            }
-
-            // Display Bracing
-            for (int i = 0; i < _bracingPoints.Count; i++)
-            {
-                for (int j = 0; j < _bracingPoints[i].Count; j++)
-                {
-                    // Draw Columns
-                    args.Display.DrawLine(_bracingPoints[i][j][0], _bracingPoints[i][j][1], colorFrameColumn, 10);
-                    args.Display.DrawLine(_bracingPoints[i][j][2], _bracingPoints[i][j][3], colorFrameColumn, 10);
-                    // Draw Bracings
-                    args.Display.DrawLine(_bracingPoints[i][j][0], _bracingPoints[i][j][3], colorRed, 10);
-                }
-            }
-
         }
 
         /// <summary>
