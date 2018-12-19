@@ -61,7 +61,7 @@ namespace RailwayPlanner
                         Point3d p3 = pLine[i + 2];
                         Circle circle = new Circle(p1, p2, p3);
                         double radius = circle.Radius;
-                        if(radius>maxRadius)
+                        if(radius<maxRadius)
                         {
                             radii.Add(radius);
                             locations.Add(p2);
@@ -80,7 +80,7 @@ namespace RailwayPlanner
                     try
                     {
                         double radius = 1 / vectorLength;
-                        if (radius > maxRadius)
+                        if (radius < maxRadius)
                         {
                             radii.Add(radius);
                             locations.Add(crv.PointAt(param));
@@ -92,7 +92,7 @@ namespace RailwayPlanner
                     }
                 }          
             }
-
+            DA.SetData(0, crv);
             _positions = locations;
             _radii = radii;
         }
@@ -110,11 +110,11 @@ namespace RailwayPlanner
             Color colorFrameColumn = Color.SteelBlue;
             Color colorRed = Color.Firebrick;
 
-            // Display Cores
+            // Display Radius
             for (int i = 0; i < _positions.Count; i++)
             {
                 string dispText = "Radius to small r = " + ((int)_radii[i]).ToString();
-                args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14 * 10);
+                args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14);
                 args.Display.DrawPoint(_positions[i], color1);
             }
         }
