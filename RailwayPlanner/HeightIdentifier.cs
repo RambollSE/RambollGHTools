@@ -55,16 +55,16 @@ namespace RailwayPlanner
                 zVal[i] = zVal[i] * -1;
                 if(zVal[i] >= 0)
                 {
-                    if(zVal[i] > 5)
+                    if (zVal[i] >= 5 && zVal[i] <= 15)
                     {
                         mid.Add(i);
                     }
-                    if (zVal[i] > 10 && zVal[i] < 15)
+                    if (zVal[i] > 15)
                     {
                         high.Add(i);
                     }
-                    else
-                    {
+                    if (zVal[i] < 5)
+                        {
                         low.Add(i);
                     }
                 }
