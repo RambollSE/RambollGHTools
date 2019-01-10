@@ -114,7 +114,6 @@ namespace RailwayPlanner
             for (int i = 0; i < _positions.Count; i++)
             {
                 string dispText = "Radius to small r = " + ((int)_radii[i]).ToString();
-                Rhino.RhinoApp.WriteLine(args.Display.Viewport.Name);
                 if (args.Display.Viewport.Name == "Top")
                 { 
                     args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14);

@@ -48,7 +48,7 @@ namespace RailwayPlanner
             if (!DA.GetData(0, ref crv)) return;
             if (!DA.GetData(1, ref sFac)) return;
 
-            double maxInclination = sFac * _maxInclination;
+            double maxInclination = _maxInclination;
 
             List<Point3d> locations = new List<Point3d>();
             List<double> inclinations = new List<double>();
@@ -115,8 +115,7 @@ namespace RailwayPlanner
             // Display Radius
             for (int i = 0; i < _positions.Count; i++)
             {
-                string dispText = "Inclination to big r = " + ((int)(_inclinations[i]*1000)).ToString() + " ‰";
-                Rhino.RhinoApp.WriteLine(args.Display.Viewport.Name);
+                string dispText = "Inclination to big, i = " + ((int)(_inclinations[i]*1000)).ToString() + " ‰";
                 if (args.Display.Viewport.Name == "Right")
                 {
                     args.Display.Draw2dText(dispText, color1, Point3d.Add(_positions[i], new Point3d(2, -2, 0)), false, 14);

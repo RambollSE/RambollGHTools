@@ -23,7 +23,7 @@ namespace RailwayPlanner
         /// </summary>
         public BakeCurve()
           : base("Adjust Curve", "CrvAdjust",
-              "Construct an Archimedean, or arithmetic, spiral given its radii and number of turns.",
+              "Bakes or replaces curve ",
               "Ramboll Tools", "Railway Planner")
         {
         }
@@ -38,7 +38,10 @@ namespace RailwayPlanner
             // All parameters must have the correct access type. If you want 
             // to import lists or trees of values, modify the ParamAccess flag.
             pManager.AddCurveParameter("Curve", "C", "Curve", GH_ParamAccess.item);
-            pManager.AddBooleanParameter("Reset", "R", "True if reset", GH_ParamAccess.item,false);
+            pManager.AddBooleanParameter("Reset", "R", "True if reset", GH_ParamAccess.item, false);
+            pManager.AddTextParameter("Layername", "L", "Name of layer", GH_ParamAccess.item);
+            pManager.AddColourParameter("Color", "C", "Object Color", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Locked", "L", "Lock Layer", GH_ParamAccess.item, false);
 
 
             // If you want to change properties of certain parameters, 
@@ -70,10 +73,19 @@ namespace RailwayPlanner
         {
             Curve sectionCurve = null;
             bool reset = false;
+            System.Drawing.Color color = System.Drawing.Color.Aquamarine;
+            string colorString = ""; 
+            bool locked = false; 
+            string layerName = "Profile Curve";
             if (!DA.GetData(0, ref sectionCurve)) return;
             if (!DA.GetData(1, ref reset)) return;
+            if (!DA.GetData(2, ref layerName)) return;
+            if (!DA.GetData(3, ref color)) return;
+            if (!DA.GetData(4, ref locked)) return;
 
-            if(reset)
+            //color = System.Drawing.Color.
+
+            if (reset)
             {
                 hasRunned = false; 
             }
@@ -81,16 +93,25 @@ namespace RailwayPlanner
             Rhino.RhinoDoc doc = Rhino.RhinoDoc.ActiveDoc;
             
             ObjectAttributes attr = doc.CreateDefaultAttributes();
-            int curveLayer = 0;
-            if (doc.Layers.FindName("Profile Curve") == null)
+            int layerIndex = 0;
+            if (doc.Layers.FindName(layerName) == null)
             {
-                curveLayer = doc.Layers.Add("Profile Curve", System.Drawing.Color.Aquamarine);
+                layerIndex = doc.Layers.Add(layerName, color);
             }
             else
             {
-                curveLayer = doc.Layers.FindName("Profile Curve").Index;
+                layerIndex = doc.Layers.FindName(layerName).Index;
+                //Layer layer = doc.Layers.FindIndex(layerIndex);
+                /*
+                RhinoObject[] rhobjs = doc.Objects.FindByLayer(layer);
+                foreach (RhinoObject obj in rhobjs)
+                {
+                    doc.Objects.Delete(obj);
+                }*/
             }
-            attr.LayerIndex = curveLayer;
+            attr.LayerIndex = layerIndex;
+            Layer layer = doc.Layers.FindIndex(layerIndex);
+            layer.IsLocked = false;
             if (hasRunned == false)
             {
                 guid = doc.Objects.AddCurve(sectionCurve,attr);
@@ -100,6 +121,7 @@ namespace RailwayPlanner
             ObjRef objRef = new ObjRef(guid);
             doc.Objects.Replace(objRef, sectionCurve);
             Curve returnedCurve = doc.Objects.FindGeometry(guid) as Curve;
+            layer.IsLocked = locked;
 
             // Finally assign the spiral to the output parameter.
             DA.SetData(0, guid);
