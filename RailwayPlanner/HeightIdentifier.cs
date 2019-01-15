@@ -32,8 +32,11 @@ namespace RailwayPlanner
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddNumberParameter("Low", "L", "int", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Mid", "M", "int", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Mid1", "M1", "int", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Mid2", "M2", "int", GH_ParamAccess.list);
             pManager.AddNumberParameter("High", "H", "int", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Cut", "C", "int", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Tunnel", "T", "int", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -45,8 +48,11 @@ namespace RailwayPlanner
             List<double> zVal = new List<double>();
             if (!DA.GetDataList(0, zVal)) return;
             List<int> low = new List<int> ();
-            List<int> mid = new List<int>();
+            List<int> mid1 = new List<int>();
+            List<int> mid2 = new List<int>();
             List<int> high = new List<int>();
+            List<int> cut = new List<int>();
+            List<int> tunnel = new List<int>();
             List<int> tempLow = new List<int>();
 
             for (int i = 0; i < zVal.Count; i++)
@@ -55,23 +61,43 @@ namespace RailwayPlanner
                 zVal[i] = zVal[i] * -1;
                 if(zVal[i] >= 0)
                 {
-                    if (zVal[i] >= 5 && zVal[i] <= 15)
+                    if (zVal[i] >= 5 && zVal[i] <= 10)
                     {
-                        mid.Add(i);
+                        mid1.Add(i);
+                    }
+                    if (zVal[i] > 10 && zVal[i] <= 15)
+                    {
+                        mid2.Add(i);
                     }
                     if (zVal[i] > 15)
                     {
                         high.Add(i);
                     }
                     if (zVal[i] < 5)
-                        {
+                    {
                         low.Add(i);
+                    }
+                }
+
+                else
+                {
+                    if (zVal[i] >= -15 )
+                    {
+                        cut.Add(i);
+                    }
+
+                    if (zVal[i] < -15)
+                    {
+                        tunnel.Add(i);
                     }
                 }
             }
             DA.SetDataList(0, low);
-            DA.SetDataList(1, mid);
-            DA.SetDataList(2, high);
+            DA.SetDataList(1, mid1);
+            DA.SetDataList(2, mid2);
+            DA.SetDataList(3, high);
+            DA.SetDataList(4, cut);
+            DA.SetDataList(5, tunnel);
 
         }
 
