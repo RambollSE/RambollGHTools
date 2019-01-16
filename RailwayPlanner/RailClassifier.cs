@@ -47,7 +47,7 @@ namespace RailwayPlanner
 
             List<string> rTypes = new List<string>();
 
-            if (roadSegment.Height <= 5)
+            if (roadSegment.Height > 0 && roadSegment.Height <= 5)
                 rTypes.Add("Bank Low");
 
             if (roadSegment.Height >= 5 && roadSegment.Height <= 10)
