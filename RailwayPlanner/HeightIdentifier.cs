@@ -32,8 +32,7 @@ namespace RailwayPlanner
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddNumberParameter("Low", "L", "int", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Mid1", "M1", "int", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Mid2", "M2", "int", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Mid", "M", "int", GH_ParamAccess.list);
             pManager.AddNumberParameter("High", "H", "int", GH_ParamAccess.list);
             pManager.AddNumberParameter("Cut", "C", "int", GH_ParamAccess.list);
             pManager.AddNumberParameter("Tunnel", "T", "int", GH_ParamAccess.list);
@@ -48,8 +47,7 @@ namespace RailwayPlanner
             List<double> zVal = new List<double>();
             if (!DA.GetDataList(0, zVal)) return;
             List<int> low = new List<int> ();
-            List<int> mid1 = new List<int>();
-            List<int> mid2 = new List<int>();
+            List<int> mid = new List<int>();
             List<int> high = new List<int>();
             List<int> cut = new List<int>();
             List<int> tunnel = new List<int>();
@@ -63,13 +61,9 @@ namespace RailwayPlanner
                 {
                     if (zVal[i] >= 5 && zVal[i] <= 10)
                     {
-                        mid1.Add(i);
+                        mid.Add(i);
                     }
-                    if (zVal[i] > 10 && zVal[i] <= 15)
-                    {
-                        mid2.Add(i);
-                    }
-                    if (zVal[i] > 15)
+                    if (zVal[i] > 10)
                     {
                         high.Add(i);
                     }
@@ -93,11 +87,10 @@ namespace RailwayPlanner
                 }
             }
             DA.SetDataList(0, low);
-            DA.SetDataList(1, mid1);
-            DA.SetDataList(2, mid2);
-            DA.SetDataList(3, high);
-            DA.SetDataList(4, cut);
-            DA.SetDataList(5, tunnel);
+            DA.SetDataList(1, mid);
+            DA.SetDataList(2, high);
+            DA.SetDataList(3, cut);
+            DA.SetDataList(4, tunnel);
 
         }
 
